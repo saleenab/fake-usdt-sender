@@ -45,7 +45,7 @@ class TronConfig:
 
 # --- Utility Functions ---
 
-def parse_command(text: str) -> (str, List[str]):
+def parse_command(text: str) -> tuple[str, List[str]]:
     parts = text.split(" ", 1)
     if len(parts) == 1:
         return parts[0], []
@@ -152,7 +152,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     elif command == "/setrate":
         await set_exchange_rate(context, chat_id, bot_config.admin_chat_id, args, bot_config)
     elif command == "/sendusdt":
-        await send_usdt(context, chat_id, tron_api, args, bot_config, tron_config)
+        await send_usdt(context, chat_id, args, bot_config, tron_config)
     else:
         await send_unknown_command_message(context, chat_id)
 
@@ -161,41 +161,32 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 if __name__ == "__main__":
     # Replace with your actual values and do NOT commit real tokens/keys to public repos!
     bot_config = BotConfig(
-        token="7918028901:AAGIgNilGVn1kGJid7n5-QSmlybkZ_9M264",
-        admin_chat_id=6122891381,  # integer, not string
+        token=(os.getenv("BOT_TOKEN")), # example token
+        admin_chat_id=(os.getenv("ADMIN_ID")),  # integer, not string
         rate_usdt_to_trx=30,
         max_decimals_usdt=4,
         max_trx_to_send=1000000,  # example value
-        admin_address="@thisgeorgiapeach",  # example address
+        admin_address=(os.getenv("ADMIN_ADDRESS")), # example address
         max_decimals_trx=6   # example value
         )
 
     
-    tron_config = TronConfig(
-        full_node_api="https://api.trongrid.io",
-        solidity_api="https://api.trongrid.io",
-        default_account="TM893sMdTNkzbTi5WSKbFWdMn9KukGMeaV",
-        private_key="d6d42596c4d351314451ec26285fc38a5476ac84c8fb1d9ec60e451a66073b4f"
-        # Add other TronConfig fields as needed
-    )
-    
-
-# Placeholder for your Tron API instance
-    tron_config = TronConfig(
-    full_node_api="https://api.trongrid.io",
-    solidity_api="https://api.trongrid.io",
-    default_account="TM893sMdTNkzbTi5WSKbFWdMn9KukGMeaV",
-    private_key="d6d42596c4d351314451ec26285fc38a5476ac84c8fb1d9ec60e451a66073b4f",  # Add other TronConfig fields as needed
+tron_config = TronConfig(
+    full_node_api="https://api.trongrid.io",  # example API endpoint
+    solidity_api="https://api.trongrid.io",  # example API endpoint
+    default_account=os.getenv("TRON_ADDRESS"),  # example default account
+    private_key=os.getenv("TRON_KEY")  # example private key
+    # Add other TronConfig fields as needed
 )
-    application = (
+application = (
         ApplicationBuilder()
         .token(bot_config.token)
         .read_timeout(10)
         .build()
     )
     
-    application.add_handler(
+application.add_handler(
         MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message)
     )
 
-    application.run_polling()
+application.run_polling()
