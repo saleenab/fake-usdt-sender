@@ -1,4 +1,9 @@
 import os 
+from dotenv import load_dotenv
+
+load_dotenv()
+load_dotenv()= C:/Dev Projects/Repos/Github/fake-usdt-sender-new/.gitignore/.env # type: ignore
+
 import json
 import logging
 import math
